@@ -1,9 +1,12 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 
-const BMICalculator = () => {
+interface BMICalculatorProps {
+  onBMIUpdate?: (bmi: number, category: string, height: number, weight: number, age: number) => void;
+}
+
+const BMICalculator = ({ onBMIUpdate }: BMICalculatorProps) => {
   const [height, setHeight] = useState([170]); // cm
   const [weight, setWeight] = useState([70]); // kg
   const [age, setAge] = useState([25]);
@@ -29,17 +32,26 @@ const BMICalculator = () => {
     const heightM = height[0] / 100;
     const weightKg = weight[0];
     const bmiValue = weightKg / (heightM * heightM);
-    setBmi(Math.round(bmiValue * 10) / 10);
+    const roundedBMI = Math.round(bmiValue * 10) / 10;
+    setBmi(roundedBMI);
 
-    if (bmiValue < 18.5) setBmiCategory('Underweight');
-    else if (bmiValue < 25) setBmiCategory('Healthy');
-    else if (bmiValue < 30) setBmiCategory('Overweight');
-    else setBmiCategory('Obese');
+    let category = '';
+    if (bmiValue < 18.5) category = 'Underweight';
+    else if (bmiValue < 25) category = 'Healthy';
+    else if (bmiValue < 30) category = 'Overweight';
+    else category = 'Obese';
+    
+    setBmiCategory(category);
+
+    // Emit the BMI update to parent component
+    if (onBMIUpdate) {
+      onBMIUpdate(roundedBMI, category, height[0], weight[0], age[0]);
+    }
   };
 
   useEffect(() => {
     calculateBMI();
-  }, [height, weight]);
+  }, [height, weight, age]);
 
   const getBmiColor = () => {
     if (bmi < 18.5) return 'from-blue-400 to-cyan-400';

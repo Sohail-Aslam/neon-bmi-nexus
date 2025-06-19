@@ -1,12 +1,19 @@
-
 import { useState, useEffect } from 'react';
 import BMICalculator from '../components/BMICalculator';
 import HealthTips from '../components/HealthTips';
 import BMIInfo from '../components/BMIInfo';
+import SaveReportForm, { SavedReport } from '../components/SaveReportForm';
+import SavedReports from '../components/SavedReports';
 import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const [scrollY, setScrollY] = useState(0);
+  const [currentBMI, setCurrentBMI] = useState(0);
+  const [currentBMICategory, setCurrentBMICategory] = useState('');
+  const [currentHeight, setCurrentHeight] = useState(170);
+  const [currentWeight, setCurrentWeight] = useState(70);
+  const [currentAge, setCurrentAge] = useState(25);
+  const [savedReports, setSavedReports] = useState<SavedReport[]>([]);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -14,14 +21,48 @@ const Index = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Load saved reports from localStorage on component mount
+  useEffect(() => {
+    const saved = localStorage.getItem('bmi-reports');
+    if (saved) {
+      const reports = JSON.parse(saved).map((report: any) => ({
+        ...report,
+        timestamp: new Date(report.timestamp)
+      }));
+      setSavedReports(reports);
+    }
+  }, []);
+
+  // Save reports to localStorage whenever savedReports changes
+  useEffect(() => {
+    localStorage.setItem('bmi-reports', JSON.stringify(savedReports));
+  }, [savedReports]);
+
   const scrollToCalculator = () => {
     document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleBMIUpdate = (bmi: number, category: string, height: number, weight: number, age: number) => {
+    setCurrentBMI(bmi);
+    setCurrentBMICategory(category);
+    setCurrentHeight(height);
+    setCurrentWeight(weight);
+    setCurrentAge(age);
+  };
+
+  const handleSaveReport = (report: SavedReport) => {
+    setSavedReports(prev => [report, ...prev]);
+  };
+
+  const handleDeleteReport = (id: string) => {
+    setSavedReports(prev => prev.filter(report => report.id !== id));
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white overflow-x-hidden">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center px-4">
+        
         <div 
           className="absolute inset-0 opacity-30"
           style={{
@@ -75,9 +116,35 @@ const Index = () => {
           <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
             BMI Calculator
           </h2>
-          <BMICalculator />
+          <BMICalculator onBMIUpdate={handleBMIUpdate} />
         </div>
       </section>
+
+      {/* Save Report Section */}
+      <section className="py-20 px-4 bg-gradient-to-r from-blue-900/20 to-purple-900/20">
+        <div className="max-w-2xl mx-auto">
+          <SaveReportForm
+            bmi={currentBMI}
+            bmiCategory={currentBMICategory}
+            height={currentHeight}
+            weight={currentWeight}
+            age={currentAge}
+            onSaveReport={handleSaveReport}
+          />
+        </div>
+      </section>
+
+      {/* Saved Reports Section */}
+      {savedReports.length > 0 && (
+        <section className="py-20 px-4">
+          <div className="max-w-6xl mx-auto">
+            <SavedReports 
+              reports={savedReports}
+              onDeleteReport={handleDeleteReport}
+            />
+          </div>
+        </section>
+      )}
 
       {/* Health Tips Section */}
       <section className="py-20 px-4 bg-gradient-to-r from-purple-900/20 to-blue-900/20">
