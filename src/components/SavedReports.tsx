@@ -23,7 +23,7 @@ const SavedReports = ({ reports, onDeleteReport }: SavedReportsProps) => {
 
   const getBmiColor = (bmi: number) => {
     if (bmi < 18.5) return 'from-blue-400 to-cyan-400';
-    if (bmi < 25) return 'from-green-400 to-emerald-400';
+    if (bmi < 25) return 'from-teal-400 to-emerald-400';
     if (bmi < 30) return 'from-yellow-400 to-orange-400';
     return 'from-red-400 to-pink-400';
   };
@@ -42,7 +42,7 @@ const SavedReports = ({ reports, onDeleteReport }: SavedReportsProps) => {
     
     // Title
     doc.setFontSize(20);
-    doc.setTextColor(40, 116, 166);
+    doc.setTextColor(20, 184, 166);
     doc.text('BMI Health Report', 20, 30);
     
     // Personal Information
@@ -54,7 +54,7 @@ const SavedReports = ({ reports, onDeleteReport }: SavedReportsProps) => {
     
     // BMI Results
     doc.setFontSize(16);
-    doc.setTextColor(40, 116, 166);
+    doc.setTextColor(20, 184, 166);
     doc.text('BMI Results', 20, 90);
     
     doc.setFontSize(12);
@@ -69,7 +69,7 @@ const SavedReports = ({ reports, onDeleteReport }: SavedReportsProps) => {
     // Notes
     if (report.notes) {
       doc.setFontSize(16);
-      doc.setTextColor(40, 116, 166);
+      doc.setTextColor(20, 184, 166);
       doc.text('Notes', 20, 175);
       
       doc.setFontSize(12);
@@ -98,7 +98,7 @@ const SavedReports = ({ reports, onDeleteReport }: SavedReportsProps) => {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-2xl font-bold text-center bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+      <h3 className="text-2xl font-bold text-center text-white">
         Your Health Reports
       </h3>
       
@@ -106,21 +106,21 @@ const SavedReports = ({ reports, onDeleteReport }: SavedReportsProps) => {
         {reports.map((report, index) => (
           <div
             key={report.id}
-            className="backdrop-blur-md bg-white/10 rounded-2xl p-6 border border-white/20 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 animate-fade-in"
+            className="bg-gray-800 rounded-xl p-6 border border-gray-700 shadow-lg hover:shadow-xl hover:border-teal-500/50 transition-all duration-300 hover:scale-105 animate-fade-in"
             style={{ animationDelay: `${index * 0.1}s` }}
           >
             {/* Header */}
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h4 className="text-lg font-bold text-white mb-1">{report.name}</h4>
-                <p className="text-gray-300 text-sm">{report.description}</p>
+                <p className="text-gray-400 text-sm">{report.description}</p>
               </div>
               <div className="flex gap-2">
                 <Button
                   onClick={() => generatePDF(report)}
                   variant="ghost"
                   size="icon"
-                  className="text-gray-400 hover:text-emerald-400 hover:bg-emerald-500/10"
+                  className="text-gray-400 hover:text-teal-400 hover:bg-teal-500/10"
                 >
                   <Download size={16} />
                 </Button>
@@ -180,7 +180,7 @@ const SavedReports = ({ reports, onDeleteReport }: SavedReportsProps) => {
                     onClick={() => setExpandedReport(
                       expandedReport === report.id ? null : report.id
                     )}
-                    className="text-xs text-cyan-400 hover:text-cyan-300 mt-1"
+                    className="text-xs text-teal-400 hover:text-teal-300 mt-1"
                   >
                     {expandedReport === report.id ? 'Show less' : 'Show more'}
                   </button>
@@ -189,7 +189,7 @@ const SavedReports = ({ reports, onDeleteReport }: SavedReportsProps) => {
             )}
 
             {/* Timestamp */}
-            <div className="text-xs text-gray-500 border-t border-white/10 pt-3">
+            <div className="text-xs text-gray-500 border-t border-gray-700 pt-3">
               {formatDate(report.timestamp)}
             </div>
           </div>
